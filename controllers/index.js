@@ -11,8 +11,8 @@ router.get('/', (req, res, next) => {
 });
 
 //Set up controller routes
-router.get('/articles', article.show);
-// router.get('/articles/:id', article.view);
+router.get('/articles', article.list);
+router.get('/articles/:id', article.show);
 router.get('/articles/add', article.add);
 router.post('/articles/add', article.create);
 router.get('/articles/edit/:id', article.edit);

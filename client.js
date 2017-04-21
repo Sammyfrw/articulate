@@ -8,5 +8,5 @@ const dbUrl = 'mongodb://' + credentials.host + ':27017/' + credentials.database
 const connection = mongoose.createConnection(dbUrl);
 
 //Clientside model setup
-const employeeDb = require('./routes/dbConnection.js');
-const Employee = employeeDb.getModel(connection);
+const DBConnection = require('../models/dbConnection');
+const Article = require('../models/article').getModel(DBConnection);

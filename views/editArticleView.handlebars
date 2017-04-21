@@ -1,0 +1,50 @@
+<form method="POST" action='/employees/edit/{{data.id}}'>
+  <table>
+  <tr>
+   <td valign="top">
+    <label for="title">Title:</label>
+   </td>
+   <td valign="top">
+    <input  type="text" name="title" size="30" value="{{data.title}}">
+   </td>
+  </tr>
+  <tr>
+   <th valign="top">
+    <label for="category">Category:</label>
+   </td>
+   <td valign="top">
+    <input  type="text" name="category" size="30">
+   </td>
+  </tr>
+  <tr>
+    <th>
+      <label for="introduction">Introduction:</label>
+    </th>
+    <td>
+      <textarea name="introduction" form="articleform" value={{data.introduction}}" rows="3" required></textarea>
+    </td>
+  </tr>
+  <tr>
+    <th>
+      <label for="content">Contents:</label>
+    </th>
+    <td>
+      <textarea name="contents" form="articleform" value="{{data.contents}}" rows="3" required></text>
+    </td>
+  </tr>
+  <tr>
+    <th>
+      <label for="conclusion">Content:</label>
+    </th>
+    <td>
+      <textarea name="conclusion" form="articleform" value="{{data.conclusion}}" rows="3" required></text>
+    </td>
+  </tr>
+  <tr>
+   <td colspan="2">
+    <input type="submit" width="100"/>
+   </td>
+  </tr>
+ </table>
+</form>
+
