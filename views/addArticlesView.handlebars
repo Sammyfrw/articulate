@@ -1,0 +1,39 @@
+<form method="POST" action="/articles/add" id="articleform">
+  <table>
+  <tr>
+   <th valign="top">
+    <label for="title">Article Title:</label>
+   </td>
+   <td valign="top">
+    <input  type="text" name="title" size="30">
+   </td>
+  </tr>
+  <tr>
+   <th valign="top">
+    <label for="category">Category:</label>
+   </td>
+   <td valign="top">
+    <input  type="text" name="category" size="30">
+   </td>
+  </tr>
+  <tr>
+    <th>
+      <label for="introduction">Introduction:</label>
+    </th>
+    <td>
+      <textarea name="introduction" form="articleform">Type your article's introduction here...</textarea>
+    </td>
+  </tr>
+  <tr>
+    <th>
+      <label for="content">Content:</label>
+    </th>
+    <td>
+      <textarea name="content" form="articleform">Type your article's content here...</text>
+   <td colspan="2">
+    <input type="submit" width="100"/>
+   </td>
+  </tr>
+ </table>
+</form>
+

@@ -1,2 +1,2 @@
-# postnote
-Postnote is my term project submission for CS602.
+# articulate
+Articulate is my term project submission for CS602.

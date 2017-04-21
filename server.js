@@ -2,7 +2,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const handlebars = require('express-handlebars');
-
 const app = express();
 
 //Handlebar engine setup
@@ -17,7 +16,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
 //Connecting the server to routes
-var routes = require('./routes/index');
+var routes = require('./controllers/index');
 app.use('/', routes);
 
 app.use((req, res) => {
