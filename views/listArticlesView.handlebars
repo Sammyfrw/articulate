@@ -3,6 +3,10 @@
   {{#each data}}
   <h1>
   <tr>
+    <th>Article Name</th>
+    <th>Article Category</th>
+    <th colspan="2">Options</th>
+  <tr>
     <td><a href="/articles/view/{{this.id}}">{{this.title}}</a></td>
     <td>{{this.category}}</td>
     <td> <a href="/articles/edit/{{this.id}}">Edit</a>
