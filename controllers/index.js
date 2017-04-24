@@ -7,18 +7,23 @@ const article = require("./articleController");
 
 //Route specifications
 router.get('/', (req, res, next) => {
-  res.redirect('/articles');
+  res.redirect('/articles/view');
 });
 
-//Set up controller routes
-router.get('/articles', article.list);
-router.get('/articles/:id', article.show);
+//Article routes
+router.get('/articles/view', article.list);
+router.get('/articles/view/:id', article.show);
 router.get('/articles/add', article.add);
 router.post('/articles/add', article.create);
 router.get('/articles/edit/:id', article.edit);
 router.post('/articles/edit/:id', article.update);
 router.get('/articles/delete/:id', article.destroy);
 
+//Author routes
+/*
+router.get('/authors', author.list);
+router.get('/authors/:id', author.show);
+*/
 //Export router
 module.exports = router;
 

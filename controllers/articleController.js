@@ -6,10 +6,8 @@ const Article = require('../models/article').getModel(DBConnection);
 
 //List articles
 var list = (req, res, next) => {
-  console.log("Show function called");
   Article.find({}, (err, articles) => {
     if(err) console.log("Error encountered: %s", err);
-    console.log("Trying to find articles");
     let results = articles.map( (article) => {
       return {
         id: article._id,
@@ -17,7 +15,6 @@ var list = (req, res, next) => {
         category: article.category,
       }
     });
-    console.log("Results returned; trying to render view");
     res.render('listArticlesView', {data: results});
   });
 };
@@ -31,7 +28,6 @@ var show = (req, res, next) => {
     if (!article) return res.render('404');
 
     res.render('showArticleView', {data: {
-        id: article._id,
         title: article.title,
         category: article.category,
         introduction: article.introduction,
@@ -52,6 +48,7 @@ var add = (req, res, next) => {
 var create = (req, res, next) => {
   let article = new Article({
     title: req.body.title,
+    category: req.body.category,
     introduction: req.body.introduction,
     contents: req.body.contents,
     conclusion: req.body.conclusion,
@@ -60,7 +57,7 @@ var create = (req, res, next) => {
 
   article.save((err) => {
     if(err) console.log("Error encountered: %s", err);
-    res.redirect('/articles');
+    res.redirect('/articles/view/');
   });
 };
 
@@ -93,16 +90,16 @@ var update = (req, res, next) => {
     if(err) console.log("Cannot find article: %s ", err);
     if(!article) return res.sender('404');
 
-    article.title = req.body.title
-    article.category: article.category,
-    article.introduction = req.body.introduction
-    article.contents = req.body.contents
-    article.conclusion = req.body.conclusion
-    article.published = req.body.published
+    article.title = req.body.title;
+    article.category = req.body.category;
+    article.introduction = req.body.introduction;
+    article.contents = req.body.contents;
+    article.conclusion = req.body.conclusion;
+    article.published = req.body.published;
 
     article.save((err) => {
       if(err) console.log("Error updating article: %s ", err);
-      res.redirect('/articles');
+      res.redirect('/articles/view/');
     });
   });
 };
@@ -117,7 +114,7 @@ var destroy = (req, res, next) => {
 
     article.remove( (err) => {
       if(err) console.log("Error deleting article: %s", err);
-      res.redirect('/articles');
+      res.redirect('/articles/view');
     });
   });
 };
