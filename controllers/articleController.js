@@ -1,5 +1,6 @@
 //Module definition and setup
 const DBConnection = require('../models/dbConnection');
+const Article = require('../models/Article').getModel(DBConnection);
 const authorFinder = require('./authorController.js');
 const xmlParser = require('./xmlController.js');
 
@@ -81,28 +82,41 @@ var add = (req, res, next) => {
 var create = (req, res, next) => {
 
   //Check if author already exists
-  let articleAuthor = authorFinder.findOrSaveAuthor(req.body.author);
-
-  let article = new Article({
-    title: req.body.title,
-    author: articleAuthor._id,
-    category: req.body.category,
-    introduction: req.body.introduction,
-    contents: req.body.contents,
-    conclusion: req.body.conclusion,
-    published: req.body.published
+  authorFinder.findOrSaveAuthor(req.body.author).then(function(author_id) {
+    console.log("author id is"  + author_id);
+    let article = new Article({
+      title: req.body.title,
+      _author: author_id,
+      category: req.body.category,
+      introduction: req.body.introduction,
+      contents: req.body.contents,
+      conclusion: req.body.conclusion,
+      published: req.body.published
+    });
+    article.save((err) => {
+      if(err) console.log("Error encountered: %s", err)
+        res.redirect('/articles/view');
+    });
   });
+}
 
-  article.save((err) => {
-    if(err) console.log("Error encountered: %s", err);
-    res.redirect('/articles/view/');
+    /*.then(function(article) {
+      article.save((err) => {
+        if(err) console.log("Error encountered: %s", err)
+      })
+       res.redirect('/articles/view/');
+    }).catch(function(err) {
+      console.log("Error encountered: %s", err);
+    });
   });
 };
-
+*/
+/*
 //Show xml form
 var addXml = (req, res, next) => {
   res.render('xmlArticleView', {});
 }
+*/
 
 //Upload article via xml
 var uploadXml = (req, res, next) => {
@@ -115,7 +129,7 @@ var uploadXml = (req, res, next) => {
   //Create new article through xml parsing
   let article = new Article({
     title: result.article.title,
-    author: articleAuthor._id,
+    _author: articleAuthor._id,
     category: result.article.category,
     introduction: result.article.introduction,
     contents: result.article.contents,
@@ -164,7 +178,7 @@ var update = (req, res, next) => {
     if(!article) return res.sender('404');
 
     article.title = req.body.title;
-    article.author = articleAuthor._id;
+    article._author = articleAuthor._id;
     article.category = req.body.category;
     article.introduction = req.body.introduction;
     article.contents = req.body.contents;
@@ -197,12 +211,12 @@ var destroy = (req, res, next) => {
 module.exports = {
   list,
   show,
-  showXml,
   add,
-  addXml,
   create,
-  uploadXml,
   edit,
   update,
-  destroy
+  destroy,
+  //  addXml,
+  showXml,
+  uploadXml
 }

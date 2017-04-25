@@ -10,10 +10,22 @@ const connection = mongoose.createConnection(dbUrl);
 //Clientside model setup
 const DBConnection = require('./models/dbConnection');
 const Article = require('./models/article').getModel(DBConnection);
+const Author = require('./models/author').getModel(DBConnection);
 
 connection.on("open", () => {
-  Article.collection.drop();
+  Article.find({}, '_id title _author',
+    (err, results) => {
+      if (err) throw err;
+      console.log(results);
+    });
+
+ Author.find({}, '_id name',
+    (err, results) => {
+      if (err) throw err;
+      console.log(results);
+    })
   console.log("Connected to server:");
+
 });
 
 connection.on("close", () => {
