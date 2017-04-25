@@ -1,9 +1,7 @@
 //Module definition and setup
 const DBConnection = require('../models/dbConnection');
-const Article = require('../models/article').getModel(DBConnection);
-
-const xml2js = require('xml2js');
-const xmlParser = new xml2js.Parser({explicitArray: false});
+const authorFinder = require('./authorController.js');
+const xmlParser = require('./xmlController.js');
 
 //Controller function definition
 
@@ -15,7 +13,7 @@ var list = (req, res, next) => {
       return {
         id: article._id,
         title: article.title,
-        category: article.category,
+        category: article.category
       }
     });
     res.render('listArticlesView', {data: results});
@@ -30,9 +28,11 @@ var show = (req, res, next) => {
     if (err) console.log("Cannot find article: %s ", err);
     if (!article) return res.render('404');
 
+    article.populate('_author');
     res.render('showArticleView', {data: {
         id: req.params.id,
         title: article.title,
+        author: article._author.name,
         category: article.category,
         introduction: article.introduction,
         contents: article.contents,
@@ -50,6 +50,7 @@ var showXml = (req, res, next) => {
   Article.findById(id, (err, article) => {
     if (err) console.log("Cannot find article: %s ", err);
     if (!article) return res.render('404');
+    article.populate('_author');
 
     let xml =
     '<?xml version="1.0"?>\n' +
@@ -59,7 +60,11 @@ var showXml = (req, res, next) => {
     '<contents>' + article.contents + '</contents>\n' +
     '<conclusion>' + article.conclusion + '</conclusion>\n' +
     '<category>' + article.category + '</category>\n' +
-    '</article>';
+    '</article>' +
+    '<author id="' + article.author._id + '">\n' +
+    '<name>' + article.author.name + '</name>\n' +
+    '<email>' + article.author.email + '</email>\n' +
+    '</author>';
 
     res.type('application/xml');
     res.send(xml);
@@ -74,8 +79,13 @@ var add = (req, res, next) => {
 
 //Create article
 var create = (req, res, next) => {
+
+  //Check if author already exists
+  let articleAuthor = authorFinder.findOrSaveAuthor(req.body.author);
+
   let article = new Article({
     title: req.body.title,
+    author: articleAuthor._id,
     category: req.body.category,
     introduction: req.body.introduction,
     contents: req.body.contents,
@@ -96,22 +106,29 @@ var addXml = (req, res, next) => {
 
 //Upload article via xml
 var uploadXml = (req, res, next) => {
-  xmlParser.parseString(req.body.xml, function (err, result) {
-    let article = new Article({
-      title: result.article.title,
-      category: result.article.category,
-      introduction: result.article.introduction,
-      contents: result.article.contents,
-      conclusion: result.article.conclusion,
-      published: result.article.published
-    });
+  //Parse xml code through xmlController
+  let result = xmlParser.parseXml(req.body.xml);
 
-    article.save((err) => {
-      if(err) console.log("Error encountered: %s", err);
-      res.redirect('/articles/view/');
-    });
+  //Check if author already exists
+  let articleAuthor = authorFinder.findOrSaveAuthor(result.article.author);
+
+  //Create new article through xml parsing
+  let article = new Article({
+    title: result.article.title,
+    author: articleAuthor._id,
+    category: result.article.category,
+    introduction: result.article.introduction,
+    contents: result.article.contents,
+    conclusion: result.article.conclusion,
+    published: result.article.published
+  });
+
+  article.save((err) => {
+    if(err) console.log("Error encountered: %s", err);
+    res.redirect('/articles/view/');
   });
 }
+
 
 //Edit article
 var edit = (req, res, next) => {
@@ -120,10 +137,11 @@ var edit = (req, res, next) => {
   Article.findById(id, (err, article) => {
     if(err) console.log("Cannot find article: %s ", err);
     if(!article) return res.render('404');
-
+    article.populate('_author');
     res.render('editArticleView', {data: {
         id: article._id,
         title: article.title,
+        author: article._author.name,
         category: article.category,
         introduction: article.introduction,
         contents: article.contents,
@@ -138,11 +156,15 @@ var edit = (req, res, next) => {
 var update = (req, res, next) => {
   let id = req.params.id;
 
+  //Check if author already exists
+  let articleAuthor = authorFinder.findOrSaveAuthor(result.article.author);
+
   Article.findById(id, (err, article) => {
     if(err) console.log("Cannot find article: %s ", err);
     if(!article) return res.sender('404');
 
     article.title = req.body.title;
+    article.author = articleAuthor._id;
     article.category = req.body.category;
     article.introduction = req.body.introduction;
     article.contents = req.body.contents;

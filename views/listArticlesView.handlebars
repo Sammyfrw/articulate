@@ -1,11 +1,11 @@
 <h1>Article List</h1>
 <table>
-  {{#each data}}
   <h1>
   <tr>
     <th>Article Name</th>
     <th>Article Category</th>
     <th colspan="2">Options</th>
+  {{#each data}}
   <tr>
     <td><a href="/articles/view/{{this.id}}">{{this.title}}</a></td>
     <td>{{this.category}}</td>
