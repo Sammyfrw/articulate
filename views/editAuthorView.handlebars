@@ -1,0 +1,24 @@
+<form method="POST" action="/authors/edit/{{data.id}}">
+  <table>
+  <tr>
+   <th>
+    <label for="name">Name:</label>
+   </th>
+   <td>
+    <input  type="text" name="name" size="30" value="{{data.author}}">
+   </td>
+  </tr>
+  <tr>
+   <th>
+    <label for="email">Email:</label>
+   </th>
+   <td>
+    <input  type="text" name="email" size="30" value="{{data.email}}">
+   </td>
+  </tr>
+  <td colspan="2">
+    <input type="submit" width="100"/>
+   </td>
+  </tr>
+ </table>
+</form>

@@ -144,15 +144,15 @@ var edit = (req, res, next) => {
     if(err) console.log("Cannot find article: %s ", err);
     if(!article) return res.render('404');
     res.render('editArticleView', {data: {
-        id: article._id,
-        title: article.title,
-        author: article._author.name,
-        category: article.category,
-        introduction: article.introduction,
-        contents: article.contents,
-        conclusion: article.conclusion,
-        published: article.published
-      }
+      id: article._id,
+      title: article.title,
+      author: article._author.name,
+      category: article.category,
+      introduction: article.introduction,
+      contents: article.contents,
+      conclusion: article.conclusion,
+      published: article.published
+    }
     });
   }).catch(function(err) {
     console.log("Error encountered: %s", err);

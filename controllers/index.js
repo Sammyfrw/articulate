@@ -4,6 +4,7 @@ const router = express.Router();
 
 //Controller setup
 const article = require("./articleController");
+const author = require("./authorController");
 
 //Route specifications
 router.get('/', (req, res, next) => {
@@ -22,10 +23,15 @@ router.get('/articles/view/:id/xml', article.showXml);
 router.post('/articles/uploadXml', article.uploadXml);
 
 //Author routes
-/*
-router.get('/authors', author.list);
-router.get('/authors/:id', author.show);
-*/
+router.get('/authors/view', author.list);
+router.get('/authors/view/:id', author.show);
+router.get('/authors/add', author.add);
+router.post('/authors/add', author.create);
+router.get('/authors/edit/:id', author.edit);
+router.post('/authors/edit/:id', author.update);
+router.get('/authors/delete/:id', author.destroy);
+
+
 
 //Export router
 module.exports = router;

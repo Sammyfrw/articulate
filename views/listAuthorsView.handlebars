@@ -1,0 +1,16 @@
+<h1>Author List</h1>
+<table>
+  <h1>
+  <tr>
+    <th>Author Name</th>
+    <th>Email</th>
+    <th colspan="2">Options</th>
+  {{#each data}}
+  <tr>
+    <td><a href="/authors/view/{{this.id}}">{{this.name}}</a></td>
+    <td>{{this.email}}</td>
+    <td> <a href="/authors/edit/{{this.id}}">Edit</a>
+    <td> <a href="/authors/delete/{{this.id}}">Delete</a>
+  </tr>
+  {{/each}}
+</table>

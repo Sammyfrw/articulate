@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 //Schema setup
 const authorSchema = new Schema({
-  name: {type: String, required: true},
+  name: {type: String, required: true, unique: true},
   email: String
 })
 
