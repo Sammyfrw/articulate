@@ -1,4 +1,4 @@
-<form method="POST" action='/employees/edit/{{data.id}}'>
+<form method="POST" action='/articles/edit/{{data.id}}' id="articleform">
   <table>
   <tr>
    <th valign="top">
@@ -34,7 +34,7 @@
   </tr>
   <tr>
     <th>
-      <label for="content">Contents:</label>
+      <label for="contents">Contents:</label>
     </th>
     <td>
       <textarea name="contents" form="articleform" rows="3" required>{{data.contents}}</textarea>

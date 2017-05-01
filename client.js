@@ -13,6 +13,21 @@ const Article = require('./models/article').getModel(DBConnection);
 const Author = require('./models/author').getModel(DBConnection);
 
 connection.on("open", () => {
+  Article.collection.drop();
+  Author.collection.drop();
+
+  author = new Author({
+    name: 'Sammy A Rachman',
+    email: ''
+  })
+  author.save();
+
+  author = new Author({
+    name: 'Joel Wylde',
+    email: ''
+  })
+  author.save();
+
   Article.find({}, '_id title _author',
     (err, results) => {
       if (err) throw err;
@@ -25,6 +40,9 @@ connection.on("open", () => {
       console.log(results);
     })
   console.log("Connected to server:");
+
+
+
 
 });
 

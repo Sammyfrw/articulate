@@ -1,6 +1,8 @@
+//Model setup
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+//Schema setup
 const articleSchema = new Schema({
   title:  {type: String, required: true},
   category: String,
@@ -13,6 +15,7 @@ const articleSchema = new Schema({
             }
 })
 
+//Exporting model functions
 module.exports = {
   getModel: (connection) => {
     return connection.model('Article', articleSchema);

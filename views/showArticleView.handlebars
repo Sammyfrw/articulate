@@ -1,21 +1,22 @@
 <h1><b>{{data.title}}</b></h1>
+<h3><i>By {{data.author}}</i></h3>
 <div class=actions>
   <a href="/articles/edit/{{data.id}}">Edit</a> |
   <a href="/articles/delete/{{data.id}}">Delete</a> |
   <a href="/articles/view/{{data.id}}/xml">Show XML</a>
 <br><br>
-<div class=intro>
+<div class=intro><h4><u>Introduction</u></h4>
   {{data.introduction}}
 </div>
 <br><br>
-<div class=contents>
+<div class=contents><h4><u>Contents</u></h4>
   {{data.contents}}
 </div>
 <br><br>
-<div class=conclusion>
+<div class=conclusion><h4><u>Conclusion</u></h4>
   {{data.conclusion}}
 </div>
 <br><br>
 <div class=tags>
-  <i>Category:</i> {{data.category}}
+  <i>Category:{{data.category}}</i>
 </div>

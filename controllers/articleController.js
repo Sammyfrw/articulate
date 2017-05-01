@@ -1,35 +1,35 @@
-//Module definition and setup
+//Model and controller definition
 const DBConnection = require('../models/dbConnection');
 const Article = require('../models/Article').getModel(DBConnection);
+const xmlParser = require('./xmlController.js')
 const authorFinder = require('./authorController.js');
-const xmlParser = require('./xmlController.js');
 
 //Controller function definition
 
 //List articles
 var list = (req, res, next) => {
-  Article.find({}, (err, articles) => {
-    if(err) console.log("Error encountered: %s", err);
-    let results = articles.map( (article) => {
+  Article.find({}).populate('_author', 'name').exec(function(err, articles){
+    let articleList = articles.map( (article) => {
       return {
         id: article._id,
         title: article.title,
+        author: article._author.name,
         category: article.category
       }
     });
-    res.render('listArticlesView', {data: results});
+    res.render('listArticlesView', {data: articleList});
+  }).catch(function(err) {
+    console.log("Error encountered: %s", err);
   });
-};
+}
 
 //Show article
 var show = (req, res, next) => {
   let id = req.params.id;
 
-  Article.findById(id, (err, article) => {
+  Article.findOne({_id : id}).populate('_author').exec(function(err, article) {
     if (err) console.log("Cannot find article: %s ", err);
     if (!article) return res.render('404');
-
-    article.populate('_author');
     res.render('showArticleView', {data: {
         id: req.params.id,
         title: article.title,
@@ -41,6 +41,8 @@ var show = (req, res, next) => {
         published: article.published
       }
     })
+  }).catch(function(err) {
+    console.log("Error encountered: %s", err);
   });
 }
 
@@ -48,11 +50,9 @@ var show = (req, res, next) => {
 var showXml = (req, res, next) => {
  let id = req.params.id;
 
-  Article.findById(id, (err, article) => {
+  Article.findOne({_id : id}).populate('_author').exec(function(err, article) {
     if (err) console.log("Cannot find article: %s ", err);
     if (!article) return res.render('404');
-    article.populate('_author');
-
     let xml =
     '<?xml version="1.0"?>\n' +
     '<article id="' + article.id + '">\n' +
@@ -61,14 +61,15 @@ var showXml = (req, res, next) => {
     '<contents>' + article.contents + '</contents>\n' +
     '<conclusion>' + article.conclusion + '</conclusion>\n' +
     '<category>' + article.category + '</category>\n' +
-    '</article>' +
-    '<author id="' + article.author._id + '">\n' +
-    '<name>' + article.author.name + '</name>\n' +
-    '<email>' + article.author.email + '</email>\n' +
-    '</author>';
+    '<author id="' + article._author._id + '">\n' +
+    '<name>' + article._author.name + '</name>\n' +
+    '<email>' + article._author.email + '</email>\n' +
+    '</author>' + '</article>';
 
     res.type('application/xml');
     res.send(xml);
+  }).catch(function(err) {
+    console.log("Error encountered: %s", err);
   });
 }
 
@@ -76,17 +77,16 @@ var showXml = (req, res, next) => {
 //Add article
 var add = (req, res, next) => {
   res.render('addArticleView', {});
-};
+}
 
 //Create article
 var create = (req, res, next) => {
 
-  //Check if author already exists
-  authorFinder.findOrSaveAuthor(req.body.author).then(function(author_id) {
-    console.log("author id is"  + author_id);
+  //Check and create if author does not exist yet before creating article
+  authorFinder.findOrSaveAuthor(req.body.author).then(function(author) {
     let article = new Article({
       title: req.body.title,
-      _author: author_id,
+      _author: author._id,
       category: req.body.category,
       introduction: req.body.introduction,
       contents: req.body.contents,
@@ -95,63 +95,54 @@ var create = (req, res, next) => {
     });
     article.save((err) => {
       if(err) console.log("Error encountered: %s", err)
-        res.redirect('/articles/view');
+      console.log("Article created.");
+      res.redirect('/articles/view');
     });
+  }).catch(function(err) {
+    console.log("Error encountered: %s", err);
   });
 }
-
-    /*.then(function(article) {
-      article.save((err) => {
-        if(err) console.log("Error encountered: %s", err)
-      })
-       res.redirect('/articles/view/');
-    }).catch(function(err) {
-      console.log("Error encountered: %s", err);
-    });
-  });
-};
-*/
-/*
-//Show xml form
-var addXml = (req, res, next) => {
-  res.render('xmlArticleView', {});
-}
-*/
 
 //Upload article via xml
 var uploadXml = (req, res, next) => {
-  //Parse xml code through xmlController
-  let result = xmlParser.parseXml(req.body.xml);
+  let xmlResult
+  let authorResult
 
-  //Check if author already exists
-  let articleAuthor = authorFinder.findOrSaveAuthor(result.article.author);
+  //Parse XML file then check if author in XML exists; create if nonexistant
+  xmlParser.parseXml(req.body.xml)
+  .then(function(result) {
+    return xmlResult = result;
+  }).then(function(xmlResult) {
+    return authorResult = authorFinder.findOrSaveAuthor(xmlResult.article.author)
+  }).then(function(authorResult) {
 
-  //Create new article through xml parsing
-  let article = new Article({
-    title: result.article.title,
-    _author: articleAuthor._id,
-    category: result.article.category,
-    introduction: result.article.introduction,
-    contents: result.article.contents,
-    conclusion: result.article.conclusion,
-    published: result.article.published
-  });
+    let article = new Article({
+      title: xmlResult.article.title,
+      _author: authorResult._id,
+      category: xmlResult.article.category,
+      introduction: xmlResult.article.introduction,
+      contents: xmlResult.article.contents,
+      conclusion: xmlResult.article.conclusion,
+      published: xmlResult.article.published
+    });
 
-  article.save((err) => {
-    if(err) console.log("Error encountered: %s", err);
-    res.redirect('/articles/view/');
+    return article.save((err) => {
+    if(err) console.log("Error encountered: %s", err)
+      console.log("Article is saved.");
+      res.redirect('/articles/view');
+    });
+  }).catch(function(err) {
+    console.log("Error encountered: %s", err);
   });
 }
-
 
 //Edit article
 var edit = (req, res, next) => {
   let id = req.params.id;
 
-  Article.findById(id, (err, article) => {
+  Article.findOne({_id: id }).populate('_author').exec(function(err, article) {
     if(err) console.log("Cannot find article: %s ", err);
     if(!article) return res.render('404');
-    article.populate('_author');
     res.render('editArticleView', {data: {
         id: article._id,
         title: article.title,
@@ -163,6 +154,8 @@ var edit = (req, res, next) => {
         published: article.published
       }
     });
+  }).catch(function(err) {
+    console.log("Error encountered: %s", err);
   });
 };
 
@@ -170,24 +163,26 @@ var edit = (req, res, next) => {
 var update = (req, res, next) => {
   let id = req.params.id;
 
-  //Check if author already exists
-  let articleAuthor = authorFinder.findOrSaveAuthor(result.article.author);
+  //Check or create if author doesn't exist yet before updating
+  authorFinder.findOrSaveAuthor(req.body.author).then(function(author) {
+    Article.findById({_id: id}).populate('_author', 'name').exec(function (err, article) {
+      if(err) console.log("Cannot find article: %s ", err);
+      if(!article) return res.sender('404');
 
-  Article.findById(id, (err, article) => {
-    if(err) console.log("Cannot find article: %s ", err);
-    if(!article) return res.sender('404');
+      article.title = req.body.title;
+      article._author = author._id;
+      article.category = req.body.category;
+      article.introduction = req.body.introduction;
+      article.contents = req.body.contents;
+      article.conclusion = req.body.conclusion;
+      article.published = req.body.published;
 
-    article.title = req.body.title;
-    article._author = articleAuthor._id;
-    article.category = req.body.category;
-    article.introduction = req.body.introduction;
-    article.contents = req.body.contents;
-    article.conclusion = req.body.conclusion;
-    article.published = req.body.published;
-
-    article.save((err) => {
-      if(err) console.log("Error updating article: %s ", err);
-      res.redirect('/articles/view/');
+      return article.save((err) => {
+        if(err) console.log("Error updating article: %s ", err);
+      }).then(function() {
+        console.log("Article is saved.");
+        res.redirect('/articles/view/');
+      });
     });
   });
 };
@@ -216,7 +211,6 @@ module.exports = {
   edit,
   update,
   destroy,
-  //  addXml,
   showXml,
   uploadXml
 }

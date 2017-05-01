@@ -4,11 +4,13 @@
   <tr>
     <th>Article Name</th>
     <th>Article Category</th>
+    <th>Author</th>
     <th colspan="2">Options</th>
   {{#each data}}
   <tr>
     <td><a href="/articles/view/{{this.id}}">{{this.title}}</a></td>
     <td>{{this.category}}</td>
+    <td>{{this.author}}</td>
     <td> <a href="/articles/edit/{{this.id}}">Edit</a>
     <td> <a href="/articles/delete/{{this.id}}">Delete</a>
   </tr>

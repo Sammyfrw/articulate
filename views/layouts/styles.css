@@ -1,0 +1,61 @@
+/*Based on Murach's style sheet*/
+body {
+    font-family: Calibri, arial;
+}
+main {
+    width: 800px;
+    margin: 0 auto;
+    padding: 1em;
+    background: AliceBlue;
+}
+h1, h2 {
+    margin-top: 0;
+    color: green;
+    font-style: bold;
+}
+label {
+    width: 10em;
+    float: left;
+    padding-right: 1em;
+    padding-bottom: .5em;
+    font-style: bold;
+    font-color: maroon;
+}
+
+.form input {
+    float: left;
+    width: 10em;
+    margin-bottom: .5em;
+}
+
+.button input {
+    float: left;
+    margin-bottom: .5em;
+}
+.error {
+    font-style: italic;
+    color: red;
+    border: solid 2px black;
+}
+br {
+    clear: left;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+th {
+    background-color: maroon;
+    color: white;
+    text-align: center;
+}
+
+td {
+    text-align: left;
+}
+
+table, th, td {
+    border: 1px solid black;
+    padding: 15px;
+}
