@@ -1,4 +1,4 @@
-//Script to be run to handle changes to database
+//Script to be run to initialize database
 //Module definitions
 const mongoose = require('mongoose');
 const credentials = require("./credentials.js");
@@ -18,15 +18,36 @@ connection.on("open", () => {
 
   author = new Author({
     name: 'Sammy A Rachman',
-    email: ''
+    email: 'testemail@mailforge.com'
   })
-  author.save();
+  author.save().then(function(author){
+    article = new Article({
+      title: "How to Start Programming",
+      _author: author._id,
+      category: "Programming",
+      introduction: 'This is the introduction.'
+      contents: 'This is the contents',
+      conclusion: 'This is the conclusion.',
+      published: true
+    })
+    article.save();
+  });
 
   author = new Author({
     name: 'Joel Wylde',
-    email: ''
+    email: 'joel@wylde.com'
   })
-  author.save();
+  author.save().then(function(author){
+    article = new Article({
+      title: "Node",
+      category: "Programming",
+      introduction: 'This is the introduction.',
+      contents: 'This is the contents.',
+      conclusion: 'This is the conclusion.',
+      published: true
+    })
+    article.save();
+  });
 
   Article.find({}, '_id title _author',
     (err, results) => {
@@ -40,10 +61,6 @@ connection.on("open", () => {
       console.log(results);
     })
   console.log("Connected to server:");
-
-
-
-
 });
 
 connection.on("close", () => {
