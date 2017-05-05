@@ -5,7 +5,6 @@ const xmlParser = require('./xmlController.js')
 const authorFinder = require('./authorArticleController.js');
 const S = require('string');
 
-
 //Controller function definition
 
 //List articles
