@@ -25,12 +25,14 @@ connection.on("open", () => {
       title: "How to Start Programming",
       _author: author._id,
       category: "Programming",
-      introduction: 'This is the introduction.'
-      contents: 'This is the contents',
+      introduction: 'This is the introduction. Let us discuss <<node>>',
+      contents: 'This is the contents.',
       conclusion: 'This is the conclusion.',
       published: true
     })
     article.save();
+    }).catch(function(err) {
+    console.log("Error encountered in client.js: %s", err)
   });
 
   author = new Author({
@@ -40,6 +42,7 @@ connection.on("open", () => {
   author.save().then(function(author){
     article = new Article({
       title: "Node",
+      _author: author._id,
       category: "Programming",
       introduction: 'This is the introduction.',
       contents: 'This is the contents.',
@@ -47,20 +50,11 @@ connection.on("open", () => {
       published: true
     })
     article.save();
+  }).catch(function(err) {
+    console.log("Error encountered in client.js: %s", err)
   });
 
-  Article.find({}, '_id title _author',
-    (err, results) => {
-      if (err) throw err;
-      console.log(results);
-    });
-
- Author.find({}, '_id name',
-    (err, results) => {
-      if (err) throw err;
-      console.log(results);
-    })
-  console.log("Connected to server:");
+  console.log("Completed database functions:");
 });
 
 connection.on("close", () => {
